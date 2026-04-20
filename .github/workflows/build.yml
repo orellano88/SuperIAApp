@@ -1,0 +1,42 @@
+name: Compilar APK (Super IA)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+        
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Instalar dependencias del sistema (Ubuntu)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential ccache git libncurses5:i386 libstdc++6:i386 libgtk2.0-0:i386 libpangox-1.0-0:i386 libpangoxft-1.0-0:i386 libidn11:i386 python3.10 python3.10-dev python3.10-venv python3-pip unzip zlib1g-dev zlib1g:i386 autoconf libtool pkg-config zip
+          
+      - name: Instalar Buildozer y Cython
+        run: |
+          python -m pip install --upgrade pip
+          pip install buildozer cython==0.29.33 virtualenv
+          
+      - name: Compilar APK con Buildozer
+        run: |
+          # Evitar problemas de permisos de root en el CI
+          export USER=runner
+          buildozer android debug
+          
+      - name: Subir el APK generado (Artefacto)
+        uses: actions/upload-artifact@v3
+        with:
+          name: SuperIA-APK
+          path: bin/*.apk
