@@ -31,9 +31,8 @@ jobs:
           
       - name: Compilar APK con Buildozer
         run: |
-          # Evitar problemas de permisos de root en el CI
-          export USER=runner
-          buildozer android debug
+          # Se necesita aceptar licencias del Android SDK antes de compilar
+          yes | buildozer android debug
           
       - name: Subir el APK generado (Artefacto)
         uses: actions/upload-artifact@v3
