@@ -1,4 +1,4 @@
-name: Build APK Standard
+name: Compilación Blindada
 
 on:
   push:
@@ -7,22 +7,19 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Instalar Dependencias Mínimas
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential ccache git python3-pip unzip zlib1g-dev libffi-dev libssl-dev autoconf automake libtool pkg-config cmake
-          pip install --upgrade buildozer cython virtualenv
+      - name: Compilar con Buildozer Action (Versión Estable)
+        uses: AndreMiras/buildozer-action@v1
+        with:
+          buildozer_version: master
+          python_version: 3.10
+          command: buildozer android debug
+          repository_root: .
 
-      - name: Compilar APK
-        run: |
-          # Solo lo estrictamente necesario
-          yes | buildozer android debug
-
-      - name: Subir APK
+      - name: Subir APK Final
         uses: actions/upload-artifact@v4
         with:
           name: SuperIA-APK
