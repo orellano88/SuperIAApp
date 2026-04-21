@@ -1,40 +1,25 @@
-name: Compilar APK (Super IA)
+name: Compilación Ultra Rápida (IA Optimized)
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
-  build-android:
-    runs-on: ubuntu-22.04
-    
+  build:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout del código
-        uses: actions/checkout@v4
-        
-      - name: Configurar Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+
+      - name: Build con Docker (Qwen/GLM5 Optimized)
+        uses: Artemiy-Anagnostou/buildozer-action@v1
         with:
-          python-version: '3.10'
-          
-      - name: Instalar dependencias del sistema
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential ccache git python3 python3-dev python3-pip unzip zlib1g-dev libffi-dev libssl-dev autoconf automake libtool pkg-config cmake
-          
-      - name: Instalar Buildozer y Cython
-        run: |
-          python -m pip install --upgrade pip
-          pip install buildozer cython==0.29.33 virtualenv
-          
-      - name: Compilar APK con Buildozer
-        run: |
-          # Limpiar compilaciones previas si existen y compilar
-          yes | buildozer android debug
-          
-      - name: Subir el APK generado (Artefacto)
+          buildozer_version: master
+          python_version: 3.9
+          command: buildozer android debug
+          repository_root: .
+
+      - name: Subir APK Final
         uses: actions/upload-artifact@v4
         with:
           name: SuperIA-APK
