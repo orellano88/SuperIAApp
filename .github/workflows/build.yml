@@ -1,26 +1,19 @@
-name: Compilación Blindada
+name: Build Final
 
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
+on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
-
-      - name: Compilar con Buildozer Action (Versión Estable)
-        uses: AndreMiras/buildozer-action@v1
-        with:
-          buildozer_version: master
-          python_version: 3.10
-          command: buildozer android debug
-          repository_root: .
-
-      - name: Subir APK Final
-        uses: actions/upload-artifact@v4
+      - name: Build
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip3 install buildozer cython
+          yes | buildozer android debug
+      - uses: actions/upload-artifact@v4
         with:
           name: SuperIA-APK
           path: bin/*.apk
