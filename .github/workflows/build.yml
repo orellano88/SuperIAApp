@@ -1,29 +1,20 @@
-name: Super IA Build Final
+name: Build IA Tributaria (Docker)
 
 on: [push, workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Super IA Build Final
-      uses: actions/checkout@v4
-
-    - name: Super IA Build Final
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: 'gradle'
-
-    - name: Super IA Build Final
-      uses: gradle/gradle-build-action@v3
-      with:
-        arguments: assembleDebug --stacktrace
-
-    - name: Super IA Build Final
-      uses: actions/upload-artifact@v4
-      with:
-        name: Super IA Build Final
-        path: app/build/outputs/apk/debug/app-debug.apk
+      - uses: actions/checkout@v4
+      
+      - name: Build with Docker (Kivy Official Container)
+        run: |
+          # Qwen/GLM5: Usar el contenedor oficial de Kivy que ya tiene todas las librerías 32/64 bits listas.
+          docker run --rm --volume "${{ github.workspace }}:/home/user/hostcwd" kivy/buildozer:latest android debug
+          
+      - name: Upload APK Final
+        uses: actions/upload-artifact@v4
+        with:
+          name: IA_Tributaria_APK
+          path: bin/*.apk
