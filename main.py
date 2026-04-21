@@ -15,44 +15,53 @@ class SuperIAEngine:
     def __init__(self):
         self.sunat_api = "https://api.apis.net.pe/v1/ruc"
         self.onpe_api = "https://devapp.zaylar.com/api"
+        self.cache = {} # Memoria volátil para consultas ultra rápidas
+        self.global_onpe_data = None
+        self.pre_fetch_onpe()
+
+    def pre_fetch_onpe(self):
+        # Qwen Optimization: Descarga anticipada en segundo plano
+        def fetch():
+            try:
+                res = requests.get(f"{self.onpe_api}/geographic/regions", timeout=15)
+                if res.status_code == 200:
+                    self.global_onpe_data = res.json().get('regions', {})
+            except: pass
+        threading.Thread(target=fetch, daemon=True).start()
 
     def get_full_analysis(self, target_id, callback):
+        # GLM5 Logic: Verificar caché antes de disparar red
+        if target_id in self.cache:
+            print(f"Caché hit para {target_id}")
+            Clock.schedule_once(lambda dt: callback(self.cache[target_id]), 0)
+            return
+
         def run():
             results = {"sunat": {}, "onpe": {}, "finanzas": {}, "error": None}
             try:
-                # 1. SUNAT (Detección automática de RUC o DNI)
                 prefix = "" if len(target_id) == 11 else "10"
                 suffix = "" if len(target_id) == 11 else "2"
                 final_id = f"{prefix}{target_id}{suffix}"
                 
-                res_sunat = requests.get(f"{self.sunat_api}?numero={final_id}", timeout=10)
+                res_sunat = requests.get(f"{self.sunat_api}?numero={final_id}", timeout=8)
                 if res_sunat.status_code == 200:
                     results["sunat"] = res_sunat.json()
                 else:
-                    results["error"] = "DNI/RUC no válido o servidor no responde."
-            except Exception as e:
-                results["error"] = "Error de conexión con el núcleo SUNAT."
+                    results["error"] = "DNI/RUC no válido."
+            except:
+                results["error"] = "Error de conexión."
 
-            try:
-                # 2. ONPE (Estadísticas Regionales - Ejemplo Puno)
-                res_onpe = requests.get(f"{self.onpe_api}/geographic/regions", timeout=10)
-                if res_onpe.status_code == 200:
-                    data_onpe = res_onpe.json()
-                    results["onpe"] = data_onpe.get('regions', {})
-            except Exception as e:
-                pass
+            # Usar datos pre-cargados de ONPE o intentar uno rápido
+            results["onpe"] = self.global_onpe_data or {}
             
-            # 3. Inteligencia Financiera Proyectada
-            # Usando modelos predictivos base sobre S/ 5,000
             ingresos = 5000 
-            itf_calculado = round(ingresos * (0.005/100), 2)
-            renta_calculada = round(ingresos * 0.08, 2)
+            itf = round(ingresos * (0.005/100), 2)
+            renta = round(ingresos * 0.08, 2)
+            results["finanzas"] = {"itf": itf, "renta": renta, "neto": round(ingresos - renta - itf, 2)}
             
-            results["finanzas"] = {
-                "itf": itf_calculado,
-                "renta": renta_calculada,
-                "neto": round(ingresos - renta_calculada - itf_calculado, 2)
-            }
+            # Guardar en caché para la próxima vez
+            if not results["error"]:
+                self.cache[target_id] = results
             
             Clock.schedule_once(lambda dt: callback(results), 0)
         
