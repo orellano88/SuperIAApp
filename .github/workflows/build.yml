@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-android:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     
     steps:
       - name: Checkout del código
@@ -19,10 +19,10 @@ jobs:
         with:
           python-version: '3.10'
           
-      - name: Instalar dependencias del sistema (Ubuntu)
+      - name: Instalar dependencias del sistema
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential ccache git libncurses5:i386 libstdc++6:i386 libgtk2.0-0:i386 libpangox-1.0-0:i386 libpangoxft-1.0-0:i386 libidn11:i386 python3.10 python3.10-dev python3.10-venv python3-pip unzip zlib1g-dev zlib1g:i386 autoconf libtool pkg-config zip
+          sudo apt-get install -y build-essential ccache git python3 python3-dev python3-pip unzip zlib1g-dev libffi-dev libssl-dev autoconf automake libtool pkg-config cmake
           
       - name: Instalar Buildozer y Cython
         run: |
@@ -31,7 +31,7 @@ jobs:
           
       - name: Compilar APK con Buildozer
         run: |
-          # Aceptar licencias del Android SDK
+          # Limpiar compilaciones previas si existen y compilar
           yes | buildozer android debug
           
       - name: Subir el APK generado (Artefacto)
