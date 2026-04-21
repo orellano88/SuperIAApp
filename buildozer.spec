@@ -9,12 +9,13 @@ requirements = python3,kivy==2.2.1,requests
 orientation = portrait
 fullscreen = 0
 android.permissions = INTERNET,ACCESS_NETWORK_STATE
-android.api = 31
+android.gradle_dependencies = 
+android.enable_androidx = True
+android.api = 33
 android.minapi = 21
-android.sdk = 31
+android.sdk = 33
 android.ndk = 25b
-android.archs = arm64-v8a
-p4a.branch = master
+android.ndk_api = 21
 
 [buildozer]
 log_level = 2
