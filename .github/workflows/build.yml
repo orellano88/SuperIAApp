@@ -1,4 +1,4 @@
-name: Compilación Definitiva (Kivy Official)
+name: Build APK Autónomo
 
 on:
   push:
@@ -7,17 +7,29 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build con Buildozer (Official Action)
-        uses: kivy/buildozer-action@v1
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
         with:
-          save_buildozer_cache: true
-          command: buildozer android debug
+          java-version: '17'
+          distribution: 'temurin'
 
-      - name: Subir APK Final
+      - name: Instalar Python y Buildozer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential ccache git libncurses5:i386 libstdc++6:i386 libgtk2.0-0:i386 libpangox-1.0-0:i386 libpangoxft-1.0-0:i386 libidn11:i386 python3-pip unzip zlib1g-dev zlib1g:i386 autoconf libtool pkg-config zip
+          pip install --upgrade buildozer cython virtualenv
+
+      - name: Compilar APK (Método Manual Seguro)
+        run: |
+          # Limpiar archivos problemáticos de intentos anteriores
+          rm -rf .buildozer
+          yes | buildozer android debug
+
+      - name: Subir Resultado
         uses: actions/upload-artifact@v4
         with:
           name: SuperIA-APK
