@@ -1,4 +1,4 @@
-name: Android PayMirror Build
+name: Super IA Build Final
 
 on: [push, workflow_dispatch]
 
@@ -7,23 +7,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout del Proyecto
+    - name: Super IA Build Final
       uses: actions/checkout@v4
 
-    - name: Configurar Java JDK 17
+    - name: Super IA Build Final
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
         cache: 'gradle'
 
-    - name: Construir con Gradle Oficial
+    - name: Super IA Build Final
       uses: gradle/gradle-build-action@v3
       with:
         arguments: assembleDebug --stacktrace
 
-    - name: Entregar APK a la Tierra (JARVIS Protocol)
+    - name: Super IA Build Final
       uses: actions/upload-artifact@v4
       with:
-        name: WingPay_v8.0_OMEGA_STARK_SYNC
+        name: Super IA Build Final
         path: app/build/outputs/apk/debug/app-debug.apk
