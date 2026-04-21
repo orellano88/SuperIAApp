@@ -1,19 +1,29 @@
-name: Build Final
+name: Android PayMirror Build
 
 on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Build
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-pip
-          pip3 install buildozer cython
-          yes | buildozer android debug
-      - uses: actions/upload-artifact@v4
-        with:
-          name: SuperIA-APK
-          path: bin/*.apk
+    - name: Checkout del Proyecto
+      uses: actions/checkout@v4
+
+    - name: Configurar Java JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: 'gradle'
+
+    - name: Construir con Gradle Oficial
+      uses: gradle/gradle-build-action@v3
+      with:
+        arguments: assembleDebug --stacktrace
+
+    - name: Entregar APK a la Tierra (JARVIS Protocol)
+      uses: actions/upload-artifact@v4
+      with:
+        name: WingPay_v8.0_OMEGA_STARK_SYNC
+        path: app/build/outputs/apk/debug/app-debug.apk

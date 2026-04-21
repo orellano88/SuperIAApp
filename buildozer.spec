@@ -1,22 +1,19 @@
 [app]
 title = IA Tributaria
 package.name = superia
-package.domain = com.superia
+package.domain = com.inversioneswing.stark
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
-version = 1.0.0
-requirements = python3,kivy==2.2.1,requests
+version = 8.0
+requirements = python3,kivy,plyer,android,requests,certifi
 orientation = portrait
+osx.python_version = 3
+osx.kivy_version = 1.9.1
 fullscreen = 0
-android.permissions = INTERNET,ACCESS_NETWORK_STATE
-android.gradle_dependencies = 
-android.enable_androidx = True
-android.api = 33
+android.permissions = INTERNET, VIBRATE, WAKE_LOCK, RECEIVE_BOOT_COMPLETED, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, POST_NOTIFICATIONS, FOREGROUND_SERVICE, CAMERA, READ_MEDIA_IMAGES, RECORD_AUDIO
+android.api = 35
 android.minapi = 21
-android.sdk = 33
+android.sdk = 35
 android.ndk = 25b
-android.ndk_api = 21
-
-[buildozer]
-log_level = 2
-warn_on_root = 1
+android.archs = arm64-v8a
+android.allow_backup = True
